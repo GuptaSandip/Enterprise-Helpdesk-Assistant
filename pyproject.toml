@@ -1,7 +1,7 @@
 [project]
-name = "fluidai"
+name = "Enterprise Helpdesk Assistant"
 version = "0.1.0"
-description = "Add your description here"
+description = "Enterprise Helpdesk Assistant. Help to call different assistant as a tool."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,7 +10,10 @@ dependencies = [
     "langchain-community==0.3.23",
     "langchain-core==0.3.59",
     "langchain-groq==0.2.4",
+    "langsmith>=0.3.45",
+    "motor>=3.7.1",
     "pydantic>=2.13.4",
+    "pymongo>=4.17.0",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.51.0",
 ]
