@@ -54,13 +54,14 @@ class AskResponse(BaseModel):
     question:   str
     answer:     str
     session_id: str
-    status:     str    # success | fallback | error
+    status:     str         # success | fallback | error
+    tools_used: list = []   # actual tool calls made by agent
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "question": "Create a high priority ticket — WiFi is down on floor 2",
-                "answer":   "Ticket Created\n  ID: TKT-A1B2C3D4 ...",
+                "answer":   "✅ Ticket Created\n  ID: TKT-A1B2C3D4 ...",
                 "session_id": "user-session-001",
                 "status":   "success",
             }

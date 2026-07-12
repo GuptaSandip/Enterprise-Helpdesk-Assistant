@@ -13,6 +13,7 @@ Endpoints:
 
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
+from langchain.callbacks.base import BaseCallbackHandler
 
 from app.models.schemas import AskRequest, AskResponse, HealthResponse, TicketsResponse
 from app.agent.agent import agent_with_memory, llm_fallback
@@ -22,12 +23,42 @@ from app.memory.session import clear_session, get_active_sessions
 router = APIRouter()
 
 
+# ── Tool Call Tracker ──────────────────────────────────────────────────────────
+
+class ToolCallTracker(BaseCallbackHandler):
+    """Captures real tool calls made by the LangChain agent."""
+
+    def __init__(self):
+        self.tools_used = []
+
+    def on_tool_start(self, serialized, input_str, **kwargs):
+        tool_name = serialized.get("name", "unknown")
+        print(f"🔍 Callback: Tool '{tool_name}' started with input: {input_str}")
+        self.tools_used.append({
+            "tool":   tool_name,
+            "input":  str(input_str)[:120],
+            "output": None,
+            "error":  None,
+        })
+
+    def on_tool_end(self, output, **kwargs):
+        print(f"🔍 Callback: Tool finished with output: {output}")
+        if self.tools_used:
+            short = str(output)[:120] + ("..." if len(str(output)) > 120 else "")
+            self.tools_used[-1]["output"] = short
+
+    def on_tool_error(self, error, **kwargs):
+        print(f"🔍 Callback: Tool error: {error}")
+        if self.tools_used:
+            self.tools_used[-1]["error"] = str(error)[:120]
+
+
 @router.get("/health", response_model=HealthResponse, tags=["System"])
 async def health():
     """Returns service health status."""
     return HealthResponse(
         status="healthy",
-        service="Enterprise Helpdesk Assistant",
+        service="Fluid AI – Enterprise Assistant",
         version="2.0.0",
         timestamp=datetime.utcnow().isoformat(),
     )
@@ -69,19 +100,25 @@ async def ask(request: AskRequest):
       3. Fallback Logic      — Direct LLM call if agent pipeline fails
       4. Input Guardrails    — Pydantic validation + injection detection
     """
-    config = {"configurable": {"session_id": request.session_id}}
+    tracker = ToolCallTracker()
+    config  = {
+        "configurable": {"session_id": request.session_id},
+        "callbacks": [tracker]
+    }
 
     # ── Primary: Agent with tool calling + memory ──
     try:
-        result = await agent_with_memory.ainvoke(
+        result = agent_with_memory.invoke(
             {"input": request.question},
             config=config,
         )
+        print(f"🔍 Callback: Execution completed. Tools tracked: {tracker.tools_used}")
         return AskResponse(
             question=request.question,
             answer=result["output"],
             session_id=request.session_id,
             status="success",
+            tools_used=tracker.tools_used,
         )
 
     except Exception as agent_error:
@@ -95,6 +132,7 @@ async def ask(request: AskRequest):
                 answer=f"[Fallback Response]\n{fallback_answer}",
                 session_id=request.session_id,
                 status="fallback",
+                tools_used=[],
             )
         except Exception as fallback_error:
             print(f"[ERROR] Fallback failed: {fallback_error}")

@@ -19,13 +19,14 @@ from app.db.database import get_sync_db
 
 
 @tool
-def create_ticket(title: str, description: str, priority: str = "medium") -> str:
+def create_ticket(title: str, description: str, employee_id: str, priority: str = "medium") -> str:
     """
     Create a new support ticket in MongoDB.
 
     Args:
         title:       Short summary of the issue
         description: Full description of the problem
+        employee_id: Employee ID (e.g. E001, E002)
         priority:    Urgency level — low | medium | high
     """
     try:
@@ -38,6 +39,7 @@ def create_ticket(title: str, description: str, priority: str = "medium") -> str
             "ticket_id":   ticket_id,
             "title":       title,
             "description": description,
+            "employee_id": employee_id.upper(),
             "priority":    priority,
             "status":      "open",
             "created_at":  datetime.utcnow().isoformat(),
@@ -51,6 +53,7 @@ def create_ticket(title: str, description: str, priority: str = "medium") -> str
             f"  ID          : {ticket_id}\n"
             f"  Title       : {title}\n"
             f"  Description : {description}\n"
+            f"  Employee ID : {employee_id.upper()}\n"
             f"  Priority    : {priority.upper()}\n"
             f"  Status      : OPEN\n"
             f"  Created At  : {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC"
@@ -88,8 +91,13 @@ def get_ticket_status(ticket_id: str) -> str:
 
 
 @tool
-def list_open_tickets() -> str:
-    """List all currently open support tickets from MongoDB."""
+def list_open_tickets(confirm: bool = True) -> str:
+    """
+    List all currently open support tickets from MongoDB.
+
+    Args:
+        confirm: Set to True to confirm retrieving the list of open tickets.
+    """
     try:
         db           = get_sync_db()
         open_tickets = list(db.tickets.find({"status": "open"}, {"_id": 0}))
@@ -138,9 +146,12 @@ def get_employee_info(employee_id: str) -> str:
 
 
 @tool
-def generate_report() -> str:
+def generate_report(confirm: bool = True) -> str:
     """
     Generate a summary report of all support tickets from MongoDB.
+
+    Args:
+        confirm: Set to True to confirm generating the summary report.
     """
     try:
         db          = get_sync_db()
