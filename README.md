@@ -29,25 +29,44 @@
 
 ---
 
+## 📸 Application Screenshots
+
+Below are screenshots of the React frontend, displaying conversation history, automatic tool invocation, and real-time agent activity tracking:
+
+### 👤 Employee Details Query
+![Employee Details Lookup](screenshots/emp_detail.png)
+
+### 🎟️ Support Ticket Creation (with mandatory Employee ID prompt)
+![Create Ticket Query](screenshots/ticket_query.png)
+
+### 📊 Support Ticket Summary Report
+![Ticket Report Generation](screenshots/report.png)
+
+### 📋 Active Ticket Count Query
+![Open Tickets Count Query](screenshots/ticket_count.png)
+
+---
+
 ## 📋 Table of Contents
 
-1. [Overview](#overview)
-2. [End-to-End Production Flow](#end-to-end-production-flow)
-3. [System Architecture](#system-architecture)
-4. [Agent Architecture](#agent-architecture)
-5. [Agent Routing & Decision Flow](#agent-routing--decision-flow)
-6. [Project Structure](#project-structure)
-7. [Setup & Installation](#setup--installation)
-8. [Configuration](#configuration)
-9. [API Endpoints](#api-endpoints)
-10. [Example Usage](#example-usage)
-11. [Conversation Memory & Sessions](#conversation-memory--sessions)
-12. [Error Handling & Fallback Logic](#error-handling--fallback-logic)
-13. [Request Validation & Guardrails](#request-validation--guardrails)
-14. [Deployment Guide](#deployment-guide)
-15. [Scaling & Production Considerations](#scaling--production-considerations)
-16. [Future Roadmap (RAG, LangGraph Migration)](#future-roadmap-rag-langgraph-migration)
-17. [Troubleshooting](#troubleshooting)
+1. [Application Screenshots](#application-screenshots)
+2. [Overview](#overview)
+3. [End-to-End Production Flow](#end-to-end-production-flow)
+4. [System Architecture](#system-architecture)
+5. [Agent Architecture](#agent-architecture)
+6. [Agent Routing & Decision Flow](#agent-routing--decision-flow)
+7. [Project Structure](#project-structure)
+8. [Setup & Installation](#setup--installation)
+9. [Configuration](#configuration)
+10. [API Endpoints](#api-endpoints)
+11. [Example Usage](#example-usage)
+12. [Conversation Memory & Sessions](#conversation-memory--sessions)
+13. [Error Handling & Fallback Logic](#error-handling--fallback-logic)
+14. [Request Validation & Guardrails](#request-validation--guardrails)
+15. [Deployment Guide](#deployment-guide)
+16. [Scaling & Production Considerations](#scaling--production-considerations)
+17. [Future Roadmap (RAG, LangGraph Migration)](#future-roadmap-rag-langgraph-migration)
+18. [Troubleshooting](#troubleshooting)
 
 ---
 
