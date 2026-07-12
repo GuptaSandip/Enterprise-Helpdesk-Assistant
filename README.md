@@ -843,27 +843,35 @@ flowchart TB
     style Agent fill:#e0a63c,color:#fff
 ```
 
-### Production Deployment (Docker)
+### Production Deployment (Docker - Single Container)
 
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-COPY pyproject.toml .
-RUN pip install --no-cache-dir -e .
-COPY . .
+The project is set up to run as a single unified container, serving the compiled React frontend and the FastAPI backend together. The build uses a multi-stage `Dockerfile`:
+1. **Frontend Builder Stage**: Compiles the React application using Vite and exports the static build directly into `/static/`.
+2. **Backend Runner Stage**: Copies the built static assets and Python source code, installs dependencies, and runs Uvicorn on port `8000`.
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
-```
-
-**Build & Run:**
+To build and run the container locally:
 ```bash
-docker build -t AI-powered_enterprise_helpdesk .
-docker run -e GROQ_API_KEY=$GROQ_API_KEY -p 8000:8000 AI-powered_enterprise_helpdesk
+# Build the container image
+docker build -t enterprise-helpdesk-assistant .
+
+# Run the container
+docker run -p 8000:8000 \
+  -e GROQ_API_KEY="your-groq-api-key" \
+  -e MONGODB_URI="your-mongodb-uri" \
+  enterprise-helpdesk-assistant
 ```
+
+### SnapDeploy Cloud Hosting (snapdeploy.dev)
+
+SnapDeploy integrates directly with GitHub and deploys using your root `Dockerfile` automatically:
+
+1. **Push your code** to your repository.
+2. **Connect the repository** in the SnapDeploy Dashboard.
+3. **Configure Environment Variables** in SnapDeploy:
+   * `GROQ_API_KEY`: Your Groq Cloud API Key.
+   * `MONGODB_URI`: Your MongoDB Atlas connection URI.
+   * `MONGODB_DB_NAME`: `enterprise_assistant_db` (or your custom database name).
+4. **Trigger Deployment**: SnapDeploy will build the container automatically and expose the service on a public HTTPS domain.
 
 ### Kubernetes Deployment
 
