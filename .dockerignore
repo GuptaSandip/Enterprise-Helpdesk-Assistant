@@ -14,4 +14,4 @@ frontend/dist
 .github
 README.md
 uv.lock
-pyproject.toml
+requirements.txt
